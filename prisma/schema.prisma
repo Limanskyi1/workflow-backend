@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement()) 
+  email       String   @unique 
+  password    String 
+  name        String
+  board       Board?   @relation("UserToBoard") 
+  tasks       Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  refreshToken String?
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  title     String   
+  ownerId   Int      @unique 
+  owner     User     @relation(fields: [ownerId], references: [id], name: "UserToBoard") 
+  tasks     Task[]   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+}
+
+model Task {
+  id          Int         @id @default(autoincrement())
+  title       String      
+  description String      
+  status      TaskStatus  @default(IN_BOX)
+  priority    TaskPriority @default(MEDIUM)
+  boardId     Int        
+  board       Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  authorId    Int         
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  dueDate     DateTime?  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt   
+}
+
+enum TaskStatus {
+  IN_BOX
+  TO_DO
+  IN_PROGRESS
+  WAITING
+  IN_REVIEW
+  DONE
+}
+
+enum TaskPriority {
+  LOWEST
+  LOW
+  MEDIUM
+  HIGH
+  HIGHEST
+}
