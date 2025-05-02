@@ -41,7 +41,6 @@ model Column {
   updatedAt DateTime    @updatedAt
 }
 
-
 model Task {
   id          Int         @id @default(autoincrement())
   title       String      
@@ -58,6 +57,7 @@ model Task {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt   
 }
+
 
 
 enum TaskStatus {
