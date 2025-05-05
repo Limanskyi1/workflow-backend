@@ -7,7 +7,6 @@ export class BoardService {
   constructor(private prisma: PrismaService) {}
 
   async getByUser(userId: number) {
-
     let board = await this.prisma.board.findFirst({
       where: { ownerId: userId },
       include: {
@@ -22,7 +21,7 @@ export class BoardService {
     if (board) {
       return board;
     }
-    
+
     board = await this.createNew(userId);
 
     return board;
@@ -40,8 +39,8 @@ export class BoardService {
       },
     });
 
-    if(!board) {
-      throw new NotFoundException("Board not found");
+    if (!board) {
+      throw new NotFoundException('Board not found');
     }
 
     return board;
@@ -49,11 +48,11 @@ export class BoardService {
 
   async update(id: number, dto: UpdateBoardDto) {
     const board = await this.prisma.board.findUnique({ where: { id } });
-  
+
     if (!board) {
       throw new NotFoundException(`Board with ID ${id} not found`);
     }
-  
+
     return this.prisma.board.update({
       where: { id },
       data: dto,

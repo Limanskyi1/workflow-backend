@@ -16,10 +16,20 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string, name: string) {
-    const existingUser = await this.prisma.user.findUnique({
+  async getUserByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
       where: { email },
     });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return user;
+  }
+
+  async register(email: string, password: string, name: string) {
+    const existingUser = await this.getUserByEmail(email);
 
     if (existingUser) {
       throw new BadRequestException('User already exists');

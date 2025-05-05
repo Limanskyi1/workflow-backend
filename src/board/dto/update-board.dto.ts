@@ -1,3 +1,3 @@
 export class UpdateBoardDto {
-    title: string;
+  title: string;
 }
