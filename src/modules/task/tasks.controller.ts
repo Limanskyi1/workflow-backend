@@ -23,6 +23,7 @@ export class TasksController {
   @Post()
   async create(@Body() dto: CreateTaskDto, @Request() req) {
     const { userId } = req.user;
+    console.log('userId', req.user);
     return this.tasksService.create(dto, userId);
   }
 

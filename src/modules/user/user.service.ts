@@ -11,6 +11,18 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  async getByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
   async getMe(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id },
@@ -59,6 +71,7 @@ export class UserService {
       currentPassword,
       user.password,
     );
+
     if (!isPasswordValid) {
       throw new BadRequestException('Password is incorrect');
     }

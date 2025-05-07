@@ -20,26 +20,12 @@ export class TasksService {
 
     const boardId = userBoard.id;
 
-    const column = await this.prisma.column.findFirst({
-      where: {
-        status,
-        boardId,
-      },
-    });
-
-    if (!column) {
-      throw new NotFoundException(
-        `Column with status ${status} not found on the board.`,
-      );
-    }
-
     return this.prisma.task.create({
       data: {
         title,
         description,
         status,
         priority: priority || 'MEDIUM',
-        columnId: column.id,
         boardId: boardId,
         authorId: userId,
         dueDate: dueDate ? new Date(dueDate) : undefined,
@@ -49,11 +35,6 @@ export class TasksService {
 
   async getAll() {
     const tasks = await this.prisma.task.findMany();
-
-    if (!tasks || tasks.length === 0) {
-      throw new NotFoundException('User not found');
-    }
-
     return tasks;
   }
 
@@ -72,34 +53,10 @@ export class TasksService {
   async updateTask(id: number, dto: UpdateTaskDto) {
     const existingTask = await this.prisma.task.findUnique({
       where: { id },
-      include: { column: true },
     });
 
     if (!existingTask) {
       throw new NotFoundException('Task not found');
-    }
-
-    if (dto.status && dto.status !== existingTask.status) {
-      const targetColumn = await this.prisma.column.findFirst({
-        where: {
-          boardId: existingTask.boardId,
-          status: dto.status,
-        },
-      });
-
-      if (!targetColumn) {
-        throw new NotFoundException(
-          `Column with status ${dto.status} not found`,
-        );
-      }
-
-      return this.prisma.task.update({
-        where: { id },
-        data: {
-          ...dto,
-          columnId: targetColumn.id,
-        },
-      });
     }
 
     return this.prisma.task.update({

@@ -24,21 +24,9 @@ model Board {
   title     String   
   ownerId   Int      @unique 
   owner     User     @relation(fields: [ownerId], references: [id], name: "UserToBoard") 
-  tasks     Task[]   
-  columns   Column[]  
+  tasks     Task[] 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
-}
-
-model Column {
-  id        Int         @id @default(autoincrement())
-  name      String      
-  status    TaskStatus  
-  boardId   Int         
-  board     Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  tasks     Task[] 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
 }
 
 model Task {
@@ -47,8 +35,6 @@ model Task {
   description String      
   status      TaskStatus  @default(IN_BOX)
   priority    TaskPriority @default(MEDIUM)
-  columnId    Int         
-  column      Column      @relation(fields: [columnId], references: [id], onDelete: Cascade)
   boardId     Int        
   board       Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
   authorId    Int         

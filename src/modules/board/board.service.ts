@@ -9,13 +9,6 @@ export class BoardService {
   async getByUser(userId: number) {
     let board = await this.prisma.board.findFirst({
       where: { ownerId: userId },
-      include: {
-        columns: {
-          include: {
-            tasks: true,
-          },
-        },
-      },
     });
 
     if (board) {
@@ -30,13 +23,6 @@ export class BoardService {
   async getById(id: number) {
     const board = await this.prisma.board.findUnique({
       where: { id },
-      include: {
-        columns: {
-          include: {
-            tasks: true,
-          },
-        },
-      },
     });
 
     if (!board) {
@@ -64,23 +50,6 @@ export class BoardService {
       data: {
         title: 'Default Board',
         ownerId: userId,
-        columns: {
-          create: [
-            { name: 'In Box', status: 'IN_BOX' },
-            { name: 'To Do', status: 'TO_DO' },
-            { name: 'In Progress', status: 'IN_PROGRESS' },
-            { name: 'Waiting', status: 'WAITING' },
-            { name: 'In Review', status: 'IN_REVIEW' },
-            { name: 'Done', status: 'DONE' },
-          ],
-        },
-      },
-      include: {
-        columns: {
-          include: {
-            tasks: true,
-          },
-        },
       },
     });
 
