@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -28,8 +29,9 @@ export class TasksController {
   }
 
   @Get()
-  async getAll() {
-    return this.tasksService.getAll();
+  async getAll(@Request() req, @Query('title') title?: string) {
+    const { userId } = req.user;
+    return this.tasksService.getAll(userId, title);
   }
 
   @Get(':id')

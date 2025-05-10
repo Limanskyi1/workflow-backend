@@ -33,9 +33,18 @@ export class TasksService {
     });
   }
 
-  async getAll() {
-    const tasks = await this.prisma.task.findMany();
-    return tasks;
+  async getAll(userId: number, title?: string) {
+    return this.prisma.task.findMany({
+      where: {
+        authorId: userId,
+        ...(title && {
+          title: {
+            contains: title,
+            mode: 'insensitive',
+          },
+        }),
+      },
+    });
   }
 
   async getById(id: number) {

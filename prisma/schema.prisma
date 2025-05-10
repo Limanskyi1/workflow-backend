@@ -17,6 +17,15 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   refreshToken String?
+  isVerified   Boolean @default(false)
+}
+
+model EmailCode {
+  id        Int      @id @default(autoincrement())
+  email     String
+  code      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }
 
 model Board {
