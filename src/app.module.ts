@@ -6,7 +6,8 @@ import { UserModule } from './modules/user/user.module';
 import { BoardModule } from './modules/board/board.module';
 import { TasksModule } from './modules/task/tasks.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { MailModule } from './mail/mail.module';
+import { MailModule } from './modules/mail/mail.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MailModule } from './mail/mail.module';
     BoardModule,
     TasksModule,
     MailModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

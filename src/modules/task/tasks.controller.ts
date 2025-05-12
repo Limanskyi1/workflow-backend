@@ -11,7 +11,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { TasksService } from './tasks.service';
+import { TasksService } from './services/tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -24,7 +24,6 @@ export class TasksController {
   @Post()
   async create(@Body() dto: CreateTaskDto, @Request() req) {
     const { userId } = req.user;
-    console.log('userId', req.user);
     return this.tasksService.create(dto, userId);
   }
 
@@ -32,6 +31,12 @@ export class TasksController {
   async getAll(@Request() req, @Query('title') title?: string) {
     const { userId } = req.user;
     return this.tasksService.getAll(userId, title);
+  }
+
+  @Get('activities')
+  async getAllActivities(@Request() req) {
+    const { userId } = req.user;
+    return this.tasksService.getAllActivities(userId);
   }
 
   @Get(':id')
@@ -48,7 +53,8 @@ export class TasksController {
   }
 
   @Delete(':id')
-  async deleteTask(@Param('id', ParseIntPipe) id: number) {
-    return this.tasksService.deleteTask(id);
+  async deleteTask(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    const { userId } = req.user;
+    return this.tasksService.deleteTask(id, userId);
   }
 }

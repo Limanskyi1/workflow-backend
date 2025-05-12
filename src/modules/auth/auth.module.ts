@@ -5,11 +5,22 @@ import { JwtStrategy } from './jwt.strategy';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { MailService } from 'src/mail/mail.service';
+import { MailService } from 'src/modules/mail/mail.service';
+import { EmailVerificationService } from './services/email-verification.service';
+import { PasswordService } from './services/password.service';
+import { TokenService } from './services/token.service';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, UserService, MailService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    UserService,
+    MailService,
+    EmailVerificationService,
+    PasswordService,
+    TokenService,
+  ],
   imports: [
     PrismaModule,
     JwtModule.register({

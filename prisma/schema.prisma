@@ -7,54 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          Int      @id @default(autoincrement()) 
-  email       String   @unique 
-  password    String 
-  name        String
-  board       Board?   @relation("UserToBoard") 
-  tasks       Task[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  refreshToken String?
-  isVerified   Boolean @default(false)
-}
-
-model EmailCode {
-  id        Int      @id @default(autoincrement())
-  email     String
-  code      String
-  createdAt DateTime @default(now())
-  expiresAt DateTime
-}
-
-model Board {
-  id        Int      @id @default(autoincrement())
-  title     String   
-  ownerId   Int      @unique 
-  owner     User     @relation(fields: [ownerId], references: [id], name: "UserToBoard") 
-  tasks     Task[] 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt 
-}
-
-model Task {
-  id          Int         @id @default(autoincrement())
-  title       String      
-  description String      
-  status      TaskStatus  @default(IN_BOX)
-  priority    TaskPriority @default(MEDIUM)
-  boardId     Int        
-  board       Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  authorId    Int         
-  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  dueDate     DateTime?  
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt   
-}
-
-
-
 enum TaskStatus {
   IN_BOX
   TO_DO
@@ -70,4 +22,68 @@ enum TaskPriority {
   MEDIUM
   HIGH
   HIGHEST
+}
+
+enum TaskActivityType {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  password     String
+  name         String
+  board        Board?         @relation("UserToBoard")
+  tasks        Task[]
+  activities   TaskActivity[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  refreshToken String?
+  isVerified   Boolean        @default(false)
+}
+
+model EmailCode {
+  id        Int      @id @default(autoincrement())
+  email     String
+  code      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  title     String
+  ownerId   Int      @unique
+  owner     User     @relation(fields: [ownerId], references: [id], name: "UserToBoard")
+  tasks     Task[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id          Int            @id @default(autoincrement())
+  title       String
+  description String
+  status      TaskStatus     @default(IN_BOX)
+  priority    TaskPriority   @default(MEDIUM)
+  boardId     Int
+  board       Board          @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  authorId    Int
+  author      User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  dueDate     DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model TaskActivity {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      TaskActivityType
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

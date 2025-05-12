@@ -1,11 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { CreateTaskDto } from '../dto/create-task.dto';
+import { UpdateTaskDto } from '../dto/update-task.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { TaskActivityEvent } from '../events/task-activity.event';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   async create(dto: CreateTaskDto, userId: number) {
     const { title, description, status, priority, dueDate } = dto;
@@ -25,8 +30,8 @@ export class TasksService {
         title,
         description,
         status,
-        priority: priority || 'MEDIUM',
-        boardId: boardId,
+        priority,
+        boardId,
         authorId: userId,
         dueDate: dueDate ? new Date(dueDate) : undefined,
       },
@@ -47,6 +52,14 @@ export class TasksService {
     });
   }
 
+  async getAllActivities(userId: number) {
+    return this.prisma.taskActivity.findMany({
+      where: {
+        userId,
+      },
+    });
+  }
+
   async getById(id: number) {
     const task = await this.prisma.task.findUnique({
       where: { id },
@@ -60,21 +73,15 @@ export class TasksService {
   }
 
   async updateTask(id: number, dto: UpdateTaskDto) {
-    const existingTask = await this.prisma.task.findUnique({
-      where: { id },
-    });
-
-    if (!existingTask) {
-      throw new NotFoundException('Task not found');
-    }
-
     return this.prisma.task.update({
       where: { id },
       data: dto,
     });
   }
 
-  async deleteTask(id: number) {
+  async deleteTask(id: number, userId: number) {
+    this.eventEmitter.emit('task.delete', new TaskActivityEvent(id, userId));
+
     const task = await this.prisma.task.delete({
       where: { id },
     });

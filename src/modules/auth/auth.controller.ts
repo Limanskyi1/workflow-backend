@@ -8,12 +8,14 @@ export class AuthController {
 
   @Post('register')
   register(@Body() dto: { email: string; password: string; name: string }) {
-    return this.authService.registerWithCode(dto.email, dto.password, dto.name);
+    const { email, password, name } = dto;
+    return this.authService.registerWithCode(email, password, name);
   }
 
   @Post('confirm')
   confirm(@Body() dto: { email: string; code: string }) {
-    return this.authService.confirmRegistrationCode(dto.email, dto.code);
+    const { email, code } = dto;
+    return this.authService.confirmRegistrationCode(email, code);
   }
 
   @Post('login')
