@@ -5,12 +5,12 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { BoardService } from './board.service';
 import { JwtAuthGuard } from 'src/modules/auth/jwt-auth.guard';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { UserId } from 'src/common/decorators/user-id.decorator';
 
 @Controller('boards')
 export class BoardController {
@@ -18,8 +18,7 @@ export class BoardController {
 
   @UseGuards(JwtAuthGuard)
   @Get('my')
-  async getByUser(@Request() req) {
-    const { userId } = req.user;
+  async getByUser(@UserId() userId: number) {
     return this.boardService.getByUser(userId);
   }
 

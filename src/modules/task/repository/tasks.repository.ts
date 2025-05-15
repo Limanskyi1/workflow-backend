@@ -1,30 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateTaskDto } from '../dto/update-task.dto';
 
 @Injectable()
 export class TasksRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findUserBoard(userId: number) {
-    return this.prisma.board.findUnique({
-      where: { ownerId: userId },
-    });
-  }
-
-  async create(data: Prisma.TaskUncheckedCreateInput) {
+  create(data: Prisma.TaskUncheckedCreateInput) {
     return this.prisma.task.create({ data });
   }
 
-  async update(id: number, data: any) {
+  createActivity(data: Prisma.TaskActivityUncheckedCreateInput) {
+    return this.prisma.taskActivity.create({ data });
+  }
+
+  update(id: number, data: UpdateTaskDto) {
     return this.prisma.task.update({ where: { id }, data });
   }
 
-  async delete(id: number) {
+  delete(id: number) {
     return this.prisma.task.delete({ where: { id } });
   }
 
-  async findAllTasks(userId: number, title?: string) {
+  getById(id: number) {
+    return this.prisma.task.findUnique({ where: { id } });
+  }
+
+  getAll(userId: number, title?: string) {
     return this.prisma.task.findMany({
       where: {
         authorId: userId,
@@ -38,15 +41,11 @@ export class TasksRepository {
     });
   }
 
-  async findTaskById(id: number) {
-    return this.prisma.task.findUnique({ where: { id } });
-  }
-
-  async findActivities(userId: number) {
+  getAllActivities(userId: number) {
     return this.prisma.taskActivity.findMany({ where: { userId } });
   }
 
-  async deleteActivities(userId: number) {
+  deleteAllActivities(userId: number) {
     return this.prisma.taskActivity.deleteMany({ where: { userId } });
   }
 }

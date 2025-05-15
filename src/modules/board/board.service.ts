@@ -1,58 +1,38 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { BoardsRepository } from './repository/boards.repository';
 
 @Injectable()
 export class BoardService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly boardsRepository: BoardsRepository) {}
 
-  async getByUser(userId: number) {
-    let board = await this.prisma.board.findFirst({
-      where: { ownerId: userId },
-    });
-
-    if (board) {
-      return board;
-    }
-
-    board = await this.createNew(userId);
-
+  async createDefault(userId: number) {
+    const board = await this.boardsRepository.createDefault(userId);
     return board;
   }
 
-  async getById(id: number) {
-    const board = await this.prisma.board.findUnique({
-      where: { id },
-    });
+  async getByUser(userId: number) {
+    const board = await this.boardsRepository.getByUserId(userId);
+    if (board) {
+      return board;
+    }
+    const defaultBoard = await this.createDefault(userId);
+    return defaultBoard;
+  }
 
+  async getById(id: number) {
+    const board = await this.boardsRepository.getById(id);
     if (!board) {
       throw new NotFoundException('Board not found');
     }
-
     return board;
   }
 
   async update(id: number, dto: UpdateBoardDto) {
-    const board = await this.prisma.board.findUnique({ where: { id } });
-
+    const board = await this.boardsRepository.getById(id);
     if (!board) {
       throw new NotFoundException(`Board with ID ${id} not found`);
     }
-
-    return this.prisma.board.update({
-      where: { id },
-      data: dto,
-    });
-  }
-
-  async createNew(userId: number) {
-    const board = await this.prisma.board.create({
-      data: {
-        title: 'Default Board',
-        ownerId: userId,
-      },
-    });
-
-    return board;
+    return this.boardsRepository.update(id, dto);
   }
 }

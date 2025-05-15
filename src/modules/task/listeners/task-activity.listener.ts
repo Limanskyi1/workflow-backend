@@ -1,22 +1,20 @@
 import { OnEvent } from '@nestjs/event-emitter';
 import { Injectable } from '@nestjs/common';
 import { TaskActivityEvent } from '../events/task-activity.event';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { TasksRepository } from '../repository/tasks.repository';
 
 @Injectable()
 export class TaskActivityListener {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly tasksRepository: TasksRepository) {}
 
   @OnEvent('task.delete')
   async handleTaskDeleted(event: TaskActivityEvent) {
     try {
-      await this.prisma.taskActivity.create({
-        data: {
-          taskId: event.taskId,
-          userId: event.userId,
-          message: `Task #${event.taskId} was deleted`,
-          type: 'DELETE',
-        },
+      await this.tasksRepository.createActivity({
+        taskId: event.taskId,
+        userId: event.userId,
+        message: `Task #${event.taskId} was deleted`,
+        type: 'DELETE',
       });
     } catch (error) {
       console.error('Error creating task activity', error);
@@ -25,13 +23,11 @@ export class TaskActivityListener {
   @OnEvent('task.create')
   async handleTaskCreated(event: TaskActivityEvent) {
     try {
-      await this.prisma.taskActivity.create({
-        data: {
-          taskId: event.taskId,
-          userId: event.userId,
-          message: `Task #${event.taskId} was created`,
-          type: 'CREATE',
-        },
+      await this.tasksRepository.createActivity({
+        taskId: event.taskId,
+        userId: event.userId,
+        message: `Task #${event.taskId} was created`,
+        type: 'CREATE',
       });
     } catch (error) {
       console.error('Error creating task activity', error);
@@ -41,13 +37,11 @@ export class TaskActivityListener {
   @OnEvent('task.update')
   async handleTaskUpdated(event: TaskActivityEvent) {
     try {
-      await this.prisma.taskActivity.create({
-        data: {
-          taskId: event.taskId,
-          userId: event.userId,
-          message: `Task #${event.taskId} was updated`,
-          type: 'UPDATE',
-        },
+      await this.tasksRepository.createActivity({
+        taskId: event.taskId,
+        userId: event.userId,
+        message: `Task #${event.taskId} was updated`,
+        type: 'UPDATE',
       });
     } catch (error) {
       console.error('Error creating task activity', error);
