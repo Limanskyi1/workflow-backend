@@ -39,6 +39,12 @@ export class TasksController {
     return this.tasksService.getAllActivities(userId);
   }
 
+  @Delete('activities')
+  async deleteAllActivities(@Request() req) {
+    const { userId } = req.user;
+    return this.tasksService.deleteAllActivities(userId);
+  }
+
   @Get(':id')
   async getById(@Param('id', ParseIntPipe) id: number) {
     return this.tasksService.getById(id);

@@ -4,38 +4,43 @@ import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TaskActivityEvent } from '../events/task-activity.event';
+import { TasksRepository } from '../repository/tasks.repository';
 
 @Injectable()
 export class TasksService {
   constructor(
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
+    private readonly tasksRepository: TasksRepository,
   ) {}
 
   async create(dto: CreateTaskDto, userId: number) {
-    const { title, description, status, priority, dueDate } = dto;
-
-    const userBoard = await this.prisma.board.findUnique({
+    const board = await this.prisma.board.findUnique({
       where: { ownerId: userId },
     });
 
-    if (!userBoard) {
+    if (!board) {
       throw new NotFoundException('Board not found for this user');
     }
 
-    const boardId = userBoard.id;
+    const { title, description, status, priority, dueDate } = dto;
 
-    return this.prisma.task.create({
-      data: {
-        title,
-        description,
-        status,
-        priority,
-        boardId,
-        authorId: userId,
-        dueDate: dueDate ? new Date(dueDate) : undefined,
-      },
+    const task = await this.tasksRepository.create({
+      title,
+      description,
+      status,
+      priority,
+      boardId: board.id,
+      authorId: userId,
+      dueDate: dueDate ? new Date(dueDate) : null,
     });
+
+    this.eventEmitter.emit(
+      'task.create',
+      new TaskActivityEvent(task.id, userId),
+    );
+
+    return task;
   }
 
   async getAll(userId: number, title?: string) {
@@ -60,6 +65,14 @@ export class TasksService {
     });
   }
 
+  async deleteAllActivities(userId: number) {
+    return this.prisma.taskActivity.deleteMany({
+      where: {
+        userId,
+      },
+    });
+  }
+
   async getById(id: number) {
     const task = await this.prisma.task.findUnique({
       where: { id },
@@ -73,10 +86,17 @@ export class TasksService {
   }
 
   async updateTask(id: number, dto: UpdateTaskDto) {
-    return this.prisma.task.update({
+    const task = await this.prisma.task.update({
       where: { id },
       data: dto,
     });
+
+    this.eventEmitter.emit(
+      'task.update',
+      new TaskActivityEvent(task.id, task.authorId),
+    );
+
+    return task;
   }
 
   async deleteTask(id: number, userId: number) {

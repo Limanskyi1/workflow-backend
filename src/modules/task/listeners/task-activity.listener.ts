@@ -22,4 +22,35 @@ export class TaskActivityListener {
       console.error('Error creating task activity', error);
     }
   }
+  @OnEvent('task.create')
+  async handleTaskCreated(event: TaskActivityEvent) {
+    try {
+      await this.prisma.taskActivity.create({
+        data: {
+          taskId: event.taskId,
+          userId: event.userId,
+          message: `Task #${event.taskId} was created`,
+          type: 'CREATE',
+        },
+      });
+    } catch (error) {
+      console.error('Error creating task activity', error);
+    }
+  }
+
+  @OnEvent('task.update')
+  async handleTaskUpdated(event: TaskActivityEvent) {
+    try {
+      await this.prisma.taskActivity.create({
+        data: {
+          taskId: event.taskId,
+          userId: event.userId,
+          message: `Task #${event.taskId} was updated`,
+          type: 'UPDATE',
+        },
+      });
+    } catch (error) {
+      console.error('Error creating task activity', error);
+    }
+  }
 }
