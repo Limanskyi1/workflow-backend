@@ -47,7 +47,7 @@ export class TasksController {
   }
 
   @Patch(':id')
-  async updateTask(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateTaskDto,
   ) {
@@ -55,10 +55,15 @@ export class TasksController {
   }
 
   @Delete(':id')
-  async deleteTask(
+  async delete(
     @Param('id', ParseIntPipe) id: number,
     @UserId() userId: number,
   ) {
     return this.tasksService.delete(id, userId);
+  }
+
+  @Delete('activities/:id')
+  async deleteActivity(@Param('id', ParseIntPipe) activityId: number) {
+    return this.tasksService.deleteActivity(activityId);
   }
 }

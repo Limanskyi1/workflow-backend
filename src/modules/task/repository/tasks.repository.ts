@@ -23,6 +23,10 @@ export class TasksRepository {
     return this.prisma.task.delete({ where: { id } });
   }
 
+  deleteActivity(id: number) {
+    return this.prisma.taskActivity.delete({ where: { id } });
+  }
+
   getById(id: number) {
     return this.prisma.task.findUnique({ where: { id } });
   }

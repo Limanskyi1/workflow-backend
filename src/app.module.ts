@@ -6,7 +6,7 @@ import { UserModule } from './modules/user/user.module';
 import { BoardModule } from './modules/board/board.module';
 import { TasksModule } from './modules/task/tasks.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { MailModule } from './modules/mail/mail.module';
+import { MailModule } from './common/mail/mail.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({

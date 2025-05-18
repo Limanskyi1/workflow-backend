@@ -71,4 +71,12 @@ export class TasksService {
     this.tasksActivityService.delete(id, userId);
     return task;
   }
+
+  async deleteActivity(id: number) {
+    const taskActivity = this.tasksRepository.deleteActivity(id);
+    if (!taskActivity) {
+      throw new NotFoundException('TaskActivity not found');
+    }
+    return taskActivity;
+  }
 }

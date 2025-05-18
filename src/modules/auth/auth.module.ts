@@ -5,7 +5,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { MailService } from 'src/modules/mail/mail.service';
+import { MailService } from 'src/common/mail/mail.service';
 import { EmailVerificationService } from './services/email-verification.service';
 import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';

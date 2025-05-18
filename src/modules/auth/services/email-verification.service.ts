@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { MailService } from 'src/modules/mail/mail.service';
+import { MailService } from 'src/common/mail/mail.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
