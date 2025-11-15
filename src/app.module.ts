@@ -8,6 +8,7 @@ import { TasksModule } from './modules/task/tasks.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MailModule } from './common/mail/mail.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { NoteModule } from './modules/note/note.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     TasksModule,
     MailModule,
     EventEmitterModule.forRoot(),
+    NoteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
