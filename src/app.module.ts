@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { MailModule } from './common/mail/mail.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { NoteModule } from './modules/note/note.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -20,6 +21,9 @@ import { NoteModule } from './modules/note/note.module';
     MailModule,
     EventEmitterModule.forRoot(),
     NoteModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
